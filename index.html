@@ -15,10 +15,16 @@ if(typeof(String.prototype.trim) === "undefined") {
 		return String(this).replace(/^\s+|\s+$/g, '');
 	};
 }
+// http://stackoverflow.com/a/2901298
+function numberWithSpace(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
+}
 $(function() {
 	var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
 	stats_csv_source = '../oh-stats/'; // FIXME dev
 
+
+	// helper for returning the weekends in a period
 	function weekendAreas(axes) {
 
 		var markings = [],
@@ -53,6 +59,7 @@ $(function() {
 	});
 
 	function processData(allText) {
+		// http://stackoverflow.com/a/7431565
 		stats.opening_hours = new Object();
 		var allTextLines = allText.split(/\r\n|\n/);
 		stats.opening_hours.headers = allTextLines[0].split(',');
@@ -66,7 +73,7 @@ $(function() {
 				if (data.length == header_length) {
 					console.log(data);
 					var tarr = [];
-					for (var j=0; j < stats.opening_hours.headers.length; j++) {
+					for (var j = 0; j < stats.opening_hours.headers.length; j++) {
 						tarr.push(data[j].trim());
 						if (j == 0) {
 							d.push([ new Date(data[j]).getTime(), data[j+1]]);
@@ -78,10 +85,16 @@ $(function() {
 		console.log(JSON.stringify(stats.opening_hours, null, '    '));
 		console.log(JSON.stringify(d, null, '    '));
 
-		// helper for returning the weekends in a period
-
-
 		var options = {
+			series: {
+				lines: {
+					show: true,
+				},
+				points: {
+					show: true
+				},
+				shadowSize: 0,
+			},
 			xaxis: {
 				mode: "time",
 				tickLength: 5
@@ -90,11 +103,15 @@ $(function() {
 				mode: "x"
 			},
 			grid: {
-				markings: weekendAreas
-			}
+				markings: weekendAreas,
+				hoverable: true,
+				// clickable: true
+			},
 		};
 
-		var plot = $.plot("#placeholder", [d], options);
+		var plot = $.plot("#placeholder", [
+				{ data: d, label: 'total number of opening_hours values' }
+			], options);
 
 		var overview = $.plot("#overview", [d], {
 			series: {
@@ -102,11 +119,11 @@ $(function() {
 					show: true,
 					lineWidth: 1
 				},
-				shadowSize: 0
+				shadowSize: 0,
 			},
 			xaxis: {
 				ticks: [],
-				mode: "time"
+				mode: "time",
 			},
 			yaxis: {
 				ticks: [],
@@ -139,6 +156,38 @@ $(function() {
 
 		$("#overview").bind("plotselected", function (event, ranges) {
 			plot.setSelection(ranges);
+		});
+
+		$("<div id='tooltip'></div>").css({
+			position: "absolute",
+			display: "none",
+			border: "1px solid #fdd",
+			padding: "2px",
+			"background-color": "#fee",
+			opacity: 0.80
+		}).appendTo("body");
+
+		$("#placeholder").bind("plothover", function (event, pos, item) {
+			if (item) {
+				console.log(item);
+				console.log(JSON.stringify(item, null, '    '));
+				var date = new Date(item.datapoint[0]),
+					y = item.datapoint[1];
+
+				$("#tooltip").html(item.series.label + " as of "
+					+ date.getFullYear() + '-' + (date.getMonth() < 10 ? '0' : '') + date.getMonth() + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
+					+ ": " + numberWithSpace(y))
+					.css({top: item.pageY+5, left: item.pageX+5})
+					.fadeIn(200);
+			} else {
+				$("#tooltip").hide();
+			}
+		});
+
+		$("#placeholder").bind("plotclick", function (event, pos, item) {
+			if (item) {
+				plot.highlight(item.series, item.datapoint);
+			}
 		});
 
 		// Add the Flot version string to the footer
