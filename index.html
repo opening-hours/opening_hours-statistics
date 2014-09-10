@@ -67,15 +67,18 @@ $(function() {
 
 		var header_length = stats.opening_hours.headers.length;
 
-		var data_total_values = [];
+		var data_total_values    = [];
 		var data_could_be_parsed = [];
+		var data_with_warning    = [];
+		var data_with_unpretty   = [];
 		for (var i = 1; i < allTextLines.length; i++) {
 			var data = allTextLines[i].split(',');
 				if (data.length == header_length) {
-					console.log(data);
 					var time = new Date(data[0]).getTime();
 					data_total_values.push([ time, data[1]]);
 					data_could_be_parsed.push([ time, data[3]]);
+					data_with_warning.push([ time, data[5]]);
+					data_with_unpretty.push([ time, data[7]]);
 
 					var tarr = [];
 					for (var j = 0; j < stats.opening_hours.headers.length; j++) {
@@ -84,8 +87,6 @@ $(function() {
 					stats.opening_hours.rows.push(tarr);
 				}
 		}
-		console.log(JSON.stringify(stats.opening_hours, null, '    '));
-		console.log(JSON.stringify(data_total_values, null, '    '));
 
 		var options = {
 			series: {
@@ -120,6 +121,14 @@ $(function() {
 				data: data_could_be_parsed,
 				label_short: 'Parsed values',
 				label: 'Number of values which could be parsed'
+			}, {
+				data: data_with_warning,
+				label_short: 'Warning values',
+				label: 'Number of values which returned a warning'
+			}, {
+				data: data_with_unpretty,
+				label_short: 'Unpretty values',
+				label: 'Number of values which are not prettified'
 			},
 		];
 		var i = 0;
@@ -138,6 +147,7 @@ $(function() {
 		});
 		choiceContainer.find("input").click(plotAccordingToChoices);
 
+		var plot;
 		function plotAccordingToChoices() {
 
 			var data = [];
@@ -150,7 +160,7 @@ $(function() {
 			});
 
 			if (data.length > 0) {
-				var plot = $.plot("#placeholder", data, options);
+				plot = $.plot("#placeholder", data, options);
 			}
 		}
 
@@ -211,14 +221,25 @@ $(function() {
 
 		$("#placeholder").bind("plothover", function (event, pos, item) {
 			if (item) {
-				console.log(item);
-				console.log(JSON.stringify(item, null, '    '));
+				// console.log(JSON.stringify(item, null, '    '));
+				// console.log();
 				var date = new Date(item.datapoint[0]),
 					y = item.datapoint[1];
 
-				$("#tooltip").html(item.series.label + " as of "
+				var additional_node = '';
+				if (item.dataIndex > 0) {
+					var diff_to_last_time = y - item.series.data[item.dataIndex - 1][1];
+					additional_node += '<br>Change to previours value: '
+						+ (diff_to_last_time > 0 ? '+' : '')
+						+ diff_to_last_time.toString();
+				}
+
+				$("#tooltip").html(
+					numberWithSpace(y)
+					+ " as of "
 					+ date.getFullYear() + '-' + (date.getMonth() < 10 ? '0' : '') + date.getMonth() + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
-					+ ": " + numberWithSpace(y))
+					+ ' (' + item.series.label + ')'
+					+ additional_node)
 					.css({top: item.pageY+5, left: item.pageX+5})
 					.fadeIn(200);
 			} else {
