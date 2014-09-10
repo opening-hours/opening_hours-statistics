@@ -121,23 +121,24 @@ $(function() {
 			{
 				data: data_total_values,
 				label_short: 'Total number',
-				label: 'Total number of opening_hours values'
+				label: 'Total number of opening_hours values',
 			}, {
 				data: data_could_be_parsed,
 				label_short: 'Parsed values',
-				label: 'Number of values which could be parsed'
+				label: 'Number of values which could be parsed',
 			}, {
 				data: data_could_be_parsed_percent,
 				label_short: 'Parsed values %',
-				label: 'Number of values which could be parsed (percent)'
+				label: 'Number of values which could be parsed (percent)',
+				float_number: true,
 			}, {
 				data: data_with_warning,
 				label_short: 'Warning values',
-				label: 'Number of values which returned a warning'
+				label: 'Number of values which returned a warning',
 			}, {
 				data: data_with_unpretty,
 				label_short: 'Unpretty values',
-				label: 'Number of values which are not prettified'
+				label: 'Number of values which are not prettified',
 			},
 		];
 		var i = 0;
@@ -240,7 +241,7 @@ $(function() {
 					var diff_to_last_time = y - item.series.data[item.dataIndex - 1][1];
 					additional_node += '<br>Change to previours value: '
 						+ (diff_to_last_time > 0 ? '+' : '')
-						+ diff_to_last_time.toFixed(3).toString();
+						+ (item.series.float_number ? diff_to_last_time.toFixed(4) : diff_to_last_time).toString();
 				}
 
 				$("#tooltip").html(
