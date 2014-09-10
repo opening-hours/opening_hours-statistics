@@ -1,6 +1,6 @@
 # opening_hours-statistics
 
-Simple visualization of the [opening_hours][Key:opening_hours] values in [OpenStreetMap](http://openstreetmap.org). The data is downloaded onces a day from [taginfo][] and then parsed with [opening_hours.js][oh-lib] (see real_test.js which exports the csv files).
+Simple visualization of the [opening_hours][Key:opening_hours] values in [OpenStreetMap](http://openstreetmap.org). The data is downloaded once a day from [taginfo][] and then parsed with [opening_hours.js][oh-lib] (see real_test.js which exports the csv files).
 
 For visualization the [flot JavaScript library][flot-lib] is used.
 

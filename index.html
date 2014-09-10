@@ -21,7 +21,7 @@ function numberWithSpace(x) {
 }
 $(function() {
 	var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
-	// stats_csv_source = '../oh-stats/'; // FIXME dev
+	stats_csv_source = '../oh-stats/'; // FIXME dev
 
 
 	// helper for returning the weekends in a period
@@ -67,23 +67,25 @@ $(function() {
 
 		var header_length = stats.opening_hours.headers.length;
 
-		var d = [];
+		var data_total_values = [];
+		var data_could_be_parsed = [];
 		for (var i = 1; i < allTextLines.length; i++) {
 			var data = allTextLines[i].split(',');
 				if (data.length == header_length) {
 					console.log(data);
+					var time = new Date(data[0]).getTime();
+					data_total_values.push([ time, data[1]]);
+					data_could_be_parsed.push([ time, data[3]]);
+
 					var tarr = [];
 					for (var j = 0; j < stats.opening_hours.headers.length; j++) {
 						tarr.push(data[j].trim());
-						if (j == 0) {
-							d.push([ new Date(data[j]).getTime(), data[j+1]]);
-						}
 					}
 					stats.opening_hours.rows.push(tarr);
 				}
 		}
 		console.log(JSON.stringify(stats.opening_hours, null, '    '));
-		console.log(JSON.stringify(d, null, '    '));
+		console.log(JSON.stringify(data_total_values, null, '    '));
 
 		var options = {
 			series: {
@@ -110,8 +112,21 @@ $(function() {
 		};
 
 		var datasets = [
-			{ data: d,  label_short: 'total number', label: 'total number of opening_hours values' }
+			{
+				data: data_total_values,
+				label_short: 'Total number',
+				label: 'Total number of opening_hours values'
+			}, {
+				data: data_could_be_parsed,
+				label_short: 'Parsed values',
+				label: 'Number of values which could be parsed'
+			},
 		];
+		var i = 0;
+		$.each(datasets, function(key, val) {
+			val.color = i;
+			++i;
+		});
 
 		// insert checkboxes
 		var choiceContainer = $("#choices");
@@ -141,7 +156,7 @@ $(function() {
 
 		plotAccordingToChoices();
 
-		var overview = $.plot("#overview", [d], {
+		var overview = $.plot("#overview", [data_total_values], {
 			series: {
 				lines: {
 					show: true,
@@ -234,22 +249,18 @@ $(function() {
 	<div id="content">
 
 		<div class="demo-container">
-			<div id="placeholder" class="demo-placeholder" style="float:left; width:675px;"></div>
-			<p id="choices" style="float:right; width:135px;"></p>
+			<div id="placeholder" class="demo-placeholder" style="float:left; width:80%;"></div>
+			<p id="choices" style="float:right;"></p>
 		</div>
 
 		<div class="demo-container" style="height:150px;">
 			<div id="overview" class="demo-placeholder"></div>
 		</div>
 
-		<p>This plot shows visitors per day to the Flot homepage, with weekends colored.</p>
-
-		<p>The smaller plot is linked to the main plot, so it acts as an overview. Try dragging a selection on either plot, and watch the behavior of the other.</p>
-
 	</div>
 
 	<div id="footer">
-		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen
+		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen; Modified by Robin `ypid` Schneider.
 	</div>
 </body>
 </html>
