@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>Flot Examples: Visitors</title>
+<title>opening_hours statistics</title>
 <link href="css/examples.css" rel="stylesheet" type="text/css">
 <script language="javascript" type="text/javascript" src="js/jquery.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
@@ -21,7 +21,7 @@ function numberWithSpace(x) {
 }
 $(function() {
 	var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
-	stats_csv_source = '../oh-stats/'; // FIXME dev
+	// stats_csv_source = '../oh-stats/'; // FIXME dev
 
 
 	// helper for returning the weekends in a period
@@ -109,9 +109,37 @@ $(function() {
 			},
 		};
 
-		var plot = $.plot("#placeholder", [
-				{ data: d, label: 'total number of opening_hours values' }
-			], options);
+		var datasets = [
+			{ data: d,  label_short: 'total number', label: 'total number of opening_hours values' }
+		];
+
+		// insert checkboxes
+		var choiceContainer = $("#choices");
+		$.each(datasets, function(key, val) {
+			choiceContainer.append("<br/><input type='checkbox' name='" + key +
+				"' checked='checked' id='id" + key + "'></input>" +
+				"<label for='id" + key + "'>"
+				+ val.label_short + "</label>");
+		});
+		choiceContainer.find("input").click(plotAccordingToChoices);
+
+		function plotAccordingToChoices() {
+
+			var data = [];
+
+			choiceContainer.find("input:checked").each(function () {
+				var key = $(this).attr("name");
+				if (key && datasets[key]) {
+					data.push(datasets[key]);
+				}
+			});
+
+			if (data.length > 0) {
+				var plot = $.plot("#placeholder", data, options);
+			}
+		}
+
+		plotAccordingToChoices();
 
 		var overview = $.plot("#overview", [d], {
 			series: {
@@ -127,7 +155,7 @@ $(function() {
 			},
 			yaxis: {
 				ticks: [],
-				min: 0,
+				// min: 0,
 				autoscaleMargin: 0.1
 			},
 			selection: {
@@ -136,7 +164,6 @@ $(function() {
 		});
 
 		// now connect the two
-
 		$("#placeholder").bind("plotselected", function (event, ranges) {
 
 			// do the zooming
@@ -201,13 +228,14 @@ $(function() {
 <body>
 
 	<div id="header">
-		<h2>Visitors</h2>
+		<h2>opening_hours statistics</h2>
 	</div>
 
 	<div id="content">
 
 		<div class="demo-container">
-			<div id="placeholder" class="demo-placeholder"></div>
+			<div id="placeholder" class="demo-placeholder" style="float:left; width:675px;"></div>
+			<p id="choices" style="float:right; width:135px;"></p>
 		</div>
 
 		<div class="demo-container" style="height:150px;">
