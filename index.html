@@ -69,14 +69,17 @@ $(function() {
 
 		var data_total_values    = [];
 		var data_could_be_parsed = [];
+		var data_could_be_parsed_percent = [];
 		var data_with_warning    = [];
 		var data_with_unpretty   = [];
+		var last_data = allTextLines[allTextLines.length - 2].split(','); // Empty line
 		for (var i = 1; i < allTextLines.length; i++) {
 			var data = allTextLines[i].split(',');
 				if (data.length == header_length) {
 					var time = new Date(data[0]).getTime();
 					data_total_values.push([ time, data[1]]);
 					data_could_be_parsed.push([ time, data[3]]);
+					data_could_be_parsed_percent.push([ time, data[3] / data[1] * 100]);
 					data_with_warning.push([ time, data[5]]);
 					data_with_unpretty.push([ time, data[7]]);
 
@@ -86,6 +89,7 @@ $(function() {
 					}
 					stats.opening_hours.rows.push(tarr);
 				}
+				// console.log(JSON.stringify(data_could_be_parsed_percent, null, '    '));
 		}
 
 		var options = {
@@ -121,6 +125,10 @@ $(function() {
 				data: data_could_be_parsed,
 				label_short: 'Parsed values',
 				label: 'Number of values which could be parsed'
+			}, {
+				data: data_could_be_parsed_percent,
+				label_short: 'Parsed values %',
+				label: 'Number of values which could be parsed (percent)'
 			}, {
 				data: data_with_warning,
 				label_short: 'Warning values',
@@ -231,7 +239,7 @@ $(function() {
 					var diff_to_last_time = y - item.series.data[item.dataIndex - 1][1];
 					additional_node += '<br>Change to previours value: '
 						+ (diff_to_last_time > 0 ? '+' : '')
-						+ diff_to_last_time.toString();
+						+ diff_to_last_time.toFixed(3).toString();
 				}
 
 				$("#tooltip").html(
