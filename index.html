@@ -50,8 +50,6 @@ $(function() {
 
 		return markings;
 	}
-	var stats = new Object();
-
 	$.ajax({
 		type: "GET",
 		url: stats_csv_source + 'real_test.opening_hours.stats.csv',
@@ -61,12 +59,8 @@ $(function() {
 
 	function processData(allText) {
 		// http://stackoverflow.com/a/7431565
-		stats.opening_hours = new Object();
 		var allTextLines = allText.split(/\r\n|\n/);
-		stats.opening_hours.headers = allTextLines[0].split(',');
-		stats.opening_hours.rows = [];
-
-		var header_length = stats.opening_hours.headers.length;
+		headers = allTextLines[0].split(',');
 
 		var data_total_values    = [];
 		var data_could_be_parsed = [];
@@ -76,7 +70,7 @@ $(function() {
 		var last_data = allTextLines[allTextLines.length - 2].split(','); // Empty line
 		for (var i = 1; i < allTextLines.length; i++) {
 			var data = allTextLines[i].split(',');
-				if (data.length == header_length) {
+				if (data.length == headers.length) {
 					var time = new Date(data[0]).getTime();
 					data_total_values.push([ time, data[1]]);
 					data_could_be_parsed.push([ time, data[3]]);
@@ -85,10 +79,9 @@ $(function() {
 					data_with_unpretty.push([ time, data[7]]);
 
 					var tarr = [];
-					for (var j = 0; j < stats.opening_hours.headers.length; j++) {
+					for (var j = 0; j < headers.length; j++) {
 						tarr.push(data[j].trim());
 					}
-					stats.opening_hours.rows.push(tarr);
 				}
 				// console.log(JSON.stringify(data_could_be_parsed_percent, null, '    '));
 		}
