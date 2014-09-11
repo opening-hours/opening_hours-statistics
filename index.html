@@ -62,11 +62,13 @@ $(function() {
 		var allTextLines = allText.split(/\r\n|\n/);
 		headers = allTextLines[0].split(',');
 
-		var data_total_values    = [];
-		var data_could_be_parsed = [];
+		var data_total_values            = [];
+		var data_could_be_parsed         = [];
 		var data_could_be_parsed_percent = [];
-		var data_with_warning    = [];
-		var data_with_unpretty   = [];
+		var data_with_warning            = [];
+		var data_with_warning_percent    = [];
+		var data_with_unpretty           = [];
+		var data_with_unpretty_percent   = [];
 		var last_data = allTextLines[allTextLines.length - 2].split(','); // Empty line
 		for (var i = 1; i < allTextLines.length; i++) {
 			var data = allTextLines[i].split(',');
@@ -76,7 +78,9 @@ $(function() {
 					data_could_be_parsed.push([ time, data[3]]);
 					data_could_be_parsed_percent.push([ time, data[3] / data[1] * 100]);
 					data_with_warning.push([ time, data[5]]);
+					data_with_warning_percent.push([ time, data[5] / data[1] * 100]);
 					data_with_unpretty.push([ time, data[7]]);
+					data_with_unpretty_percent.push([ time, data[7] / data[1] * 100]);
 
 					var tarr = [];
 					for (var j = 0; j < headers.length; j++) {
@@ -136,9 +140,21 @@ $(function() {
 				label_short: 'Warning values',
 				label: 'Number of values which returned a warning',
 			}, {
+				data: data_with_warning_percent,
+				yaxis: 2,
+				label_short: 'Warning values in %',
+				label: 'Number of values which returned a warning in percent',
+				float_number: true,
+			}, {
 				data: data_with_unpretty,
 				label_short: 'Unpretty values',
 				label: 'Number of values which are not prettified',
+			}, {
+				data: data_with_unpretty_percent,
+				yaxis: 2,
+				label_short: 'Unpretty values in %',
+				label: 'Number of values which are not prettified in percent',
+				float_number: true,
 			},
 		];
 		var i = 0;
