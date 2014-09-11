@@ -105,8 +105,10 @@ $(function() {
 			},
 			xaxis: {
 				mode: "time",
-				tickLength: 5
+				tickLength: 5,
+				timezone: "browser",
 			},
+			yaxis: [ { position: "left" }, { position: "left" } ],
 			selection: {
 				mode: "x"
 			},
@@ -115,21 +117,26 @@ $(function() {
 				hoverable: true,
 				// clickable: true
 			},
+			legend: {
+				position: "se",
+			},
 		};
 
 		var datasets = [
 			{
 				data: data_total_values,
 				label_short: 'Total number',
-				label: 'Total number of opening_hours values',
-			}, {
+				label: 'Total number of values',
+				checked: true, }, {
 				data: data_could_be_parsed,
 				label_short: 'Parsed values',
 				label: 'Number of values which could be parsed',
 			}, {
 				data: data_could_be_parsed_percent,
-				label_short: 'Parsed values %',
-				label: 'Number of values which could be parsed (percent)',
+				yaxis: 2,
+				label_short: 'Parsed values in %',
+				label: 'Number of values which could be parsed in percent',
+				checked: true,
 				float_number: true,
 			}, {
 				data: data_with_warning,
@@ -150,8 +157,9 @@ $(function() {
 		// insert checkboxes
 		var choiceContainer = $("#choices");
 		$.each(datasets, function(key, val) {
-			choiceContainer.append("<br/><input type='checkbox' name='" + key +
-				"' checked='checked' id='id" + key + "'></input>" +
+			// val.checked = true;
+			choiceContainer.append("<br/><input type='checkbox' name='" + key + "'" +
+				(val.checked ? " checked='checked'" : '') + " id='id" + key + "'></input>" +
 				"<label for='id" + key + "'>"
 				+ val.label_short + "</label>");
 		});
@@ -245,9 +253,11 @@ $(function() {
 				}
 
 				$("#tooltip").html(
-					numberWithSpace(y)
+					(item.series.float_number ? y.toFixed(3).toString() + '&nbsp;%' : numberWithSpace(y))
 					+ " as of "
 					+ date.getFullYear() + '-' + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
+					+ ' ' + (date.getHours() < 10 ? '0' : '') + date.getHours()
+					+ ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
 					+ ' (' + item.series.label + ')'
 					+ additional_node)
 					.css({top: item.pageY+5, left: item.pageX+5})
