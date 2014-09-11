@@ -18,7 +18,7 @@ if(typeof(String.prototype.trim) === "undefined") {
 }
 // http://stackoverflow.com/a/2901298
 function numberWithSpace(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
+	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
 }
 $(function() {
 	var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
@@ -247,7 +247,7 @@ $(function() {
 				$("#tooltip").html(
 					numberWithSpace(y)
 					+ " as of "
-					+ date.getFullYear() + '-' + (date.getMonth() < 10 ? '0' : '') + date.getMonth() + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
+					+ date.getFullYear() + '-' + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
 					+ ' (' + item.series.label + ')'
 					+ additional_node)
 					.css({top: item.pageY+5, left: item.pageX+5})
