@@ -256,7 +256,7 @@ $(function() {
 				var additional_node = '';
 				if (item.dataIndex > 0) {
 					var diff_to_last_time = y - item.series.data[item.dataIndex - 1][1];
-					additional_node += '<br>Change to previours value: '
+					additional_node += '<br>Difference to previous value: '
 						+ (diff_to_last_time > 0 ? '+' : '')
 						+ (item.series.float_number ? diff_to_last_time.toFixed(4) : diff_to_last_time).toString();
 				}
