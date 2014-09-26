@@ -10,6 +10,7 @@
 <script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.flot.selection.js"></script>
 <script type="text/javascript">
+/* Helpers {{{ */
 // http://stackoverflow.com/a/1418059
 if(typeof(String.prototype.trim) === "undefined") {
 	String.prototype.trim = function() {
@@ -20,12 +21,21 @@ if(typeof(String.prototype.trim) === "undefined") {
 function numberWithSpace(x) {
 	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
 }
+/* }}} */
+
 $(function() {
 	var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
 	// stats_csv_source = '../oh-stats/'; // FIXME dev
 
+	var tag_keys = [
+		'opening_hours', 'opening_hours:kitchen', 'opening_hours:warm_kitchen',
+		'collection_times', 'fee', 'lit',
+		'service_times',
+		// 'smoking_hours', // FIXME: No data yet
+		'happy_hours'
+	];
 
-	// helper for returning the weekends in a period
+	/* Helper for returning the weekends in a period {{{ */
 	function weekendAreas(axes) {
 
 		var markings = [],
@@ -50,14 +60,31 @@ $(function() {
 
 		return markings;
 	}
-	$.ajax({
-		type: "GET",
-		url: stats_csv_source + 'real_test.opening_hours.stats.csv',
-		dataType: "text",
-		success: function(data) {processData(data);},
+	/* }}} */
+
+	function showStatsForKey(key) {
+		$.ajax({
+			type: "GET",
+			url: stats_csv_source + 'real_test.' + key + '.stats.csv',
+			dataType: "text",
+			success: function(data) {processData(data);},
+		});
+	}
+
+	showStatsForKey('opening_hours');
+
+	$.each(tag_keys, function(ind, text) {
+		$('#tag_selector').append(new Option(text, ind));
 	});
+	$('#tag_selector').on('change', function() {
+		showStatsForKey(tag_keys[this.value]);
+	})
 
 	function processData(allText) {
+		$('#placeholder').empty();
+		$('#overview').empty();
+		$('#choices').empty();
+
 		// http://stackoverflow.com/a/7431565
 		var allTextLines = allText.split(/\r\n|\n/);
 		headers = allTextLines[0].split(',');
@@ -134,7 +161,7 @@ $(function() {
 				label_short: 'Parsed values in %',
 				label: 'Number of values which could be parsed in percent',
 				checked: true,
-				float_number: true,
+				percent_number: true,
 			}, {
 				data: data_with_warning,
 				label_short: 'Warning values',
@@ -144,7 +171,7 @@ $(function() {
 				yaxis: 2,
 				label_short: 'Warning values in %',
 				label: 'Number of values which returned a warning in percent',
-				float_number: true,
+				percent_number: true,
 			}, {
 				data: data_with_unpretty,
 				label_short: 'Unpretty values',
@@ -154,7 +181,7 @@ $(function() {
 				yaxis: 2,
 				label_short: 'Unpretty values in %',
 				label: 'Number of values which are not prettified in percent',
-				float_number: true,
+				percent_number: true,
 			},
 		];
 		var i = 0;
@@ -164,6 +191,7 @@ $(function() {
 		});
 
 		// insert checkboxes
+
 		var choiceContainer = $("#choices");
 		$.each(datasets, function(key, val) {
 			// val.checked = true;
@@ -176,7 +204,6 @@ $(function() {
 
 		var plot;
 		function plotAccordingToChoices() {
-
 			var data = [];
 
 			choiceContainer.find("input:checked").each(function () {
@@ -258,11 +285,11 @@ $(function() {
 					var diff_to_last_time = y - item.series.data[item.dataIndex - 1][1];
 					additional_node += '<br>Difference to previous value: '
 						+ (diff_to_last_time > 0 ? '+' : '')
-						+ (item.series.float_number ? diff_to_last_time.toFixed(4) : diff_to_last_time).toString();
+						+ (item.series.percent_number ? diff_to_last_time.toFixed(4) + '&nbsp;%' : diff_to_last_time).toString();
 				}
 
 				$("#tooltip").html(
-					(item.series.float_number ? y.toFixed(3).toString() + '&nbsp;%' : numberWithSpace(y))
+					(item.series.percent_number ? y.toFixed(3).toString() + '&nbsp;%' : numberWithSpace(y))
 					+ " as of "
 					+ date.getFullYear() + '-' + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
 					+ ' ' + (date.getHours() < 10 ? '0' : '') + date.getHours()
@@ -284,11 +311,11 @@ $(function() {
 
 		// Add the Flot version string to the footer
 
-		$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
 	}
-	});
+	$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+});
 
-	</script>
+</script>
 </head>
 <body>
 
@@ -301,8 +328,11 @@ $(function() {
 	<div id="content">
 
 		<div class="demo-container">
-			<div id="placeholder" class="demo-placeholder" style="float:left; width:80%;"></div>
-			<p id="choices" style="float:right;"></p>
+			<div id="placeholder" class="demo-placeholder" style="float:left; width:60%;"></div>
+			<div style="float:right;">
+				<select id="tag_selector"></select>
+				<p id="choices"></p>
+			</div>
 		</div>
 
 		<div class="demo-container" style="height:150px;">
