@@ -1,323 +1,329 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<title>opening_hours statistics</title>
-<link rel="icon" type="image/png" href="/favicon.png">
-<link href="css/examples.css" rel="stylesheet" type="text/css">
-<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
-<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
-<script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
-<script language="javascript" type="text/javascript" src="js/jquery.flot.selection.js"></script>
-<script type="text/javascript">
-/* Helpers {{{ */
-// http://stackoverflow.com/a/1418059
-if(typeof(String.prototype.trim) === "undefined") {
-	String.prototype.trim = function() {
-		return String(this).replace(/^\s+|\s+$/g, '');
-	};
-}
-// http://stackoverflow.com/a/2901298
-function numberWithSpace(x) {
-	return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
-}
-/* }}} */
+<head><!-- {{{ -->
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>opening_hours statistics</title>
+	<link rel="icon" type="image/png" href="/favicon.png">
+	<link href="css/examples.css" rel="stylesheet" type="text/css">
+	<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.time.js"></script>
+	<script language="javascript" type="text/javascript" src="js/jquery.flot.selection.js"></script>
+  <script type="text/javascript">/* {{{ */
+		/* Helpers {{{ */
+		// http://stackoverflow.com/a/1418059
+		if(typeof(String.prototype.trim) === "undefined") {
+			String.prototype.trim = function() {
+				return String(this).replace(/^\s+|\s+$/g, '');
+			};
+		}
+		// http://stackoverflow.com/a/2901298
+		function numberWithSpace(x) {
+			return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
+		}
+		/* }}} */
 
-$(function() {
-	var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
-	// stats_csv_source = '../oh-stats/'; // FIXME dev
+		$(function() {
+			var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
+			// stats_csv_source = '../oh-stats/'; // FIXME dev
 
-	var tag_keys = [
-		'opening_hours', 'opening_hours:kitchen', 'opening_hours:warm_kitchen',
-		'service_times',
-		'collection_times', 'fee', 'lit',
-		'happy_hours',
-		'smoking_hours',
-	];
+			var tag_keys = [
+				'opening_hours', 'opening_hours:kitchen', 'opening_hours:warm_kitchen',
+				'service_times',
+				'collection_times', 'fee', 'lit',
+				'happy_hours',
+				'smoking_hours',
+			];
 
-	/* Helper for returning the weekends in a period {{{ */
-	function weekendAreas(axes) {
+			/* Helper for returning the weekends in a period {{{ */
+			function weekendAreas(axes) {
 
-		var markings = [],
-			d = new Date(axes.xaxis.min);
+				var markings = [],
+					d = new Date(axes.xaxis.min);
 
-		// go to the first Saturday
+				// go to the first Saturday
 
-		d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
-		d.setUTCSeconds(0);
-		d.setUTCMinutes(0);
-		d.setUTCHours(0);
+				d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
+				d.setUTCSeconds(0);
+				d.setUTCMinutes(0);
+				d.setUTCHours(0);
 
-		var i = d.getTime();
+				var i = d.getTime();
 
-		// when we don't set yaxis, the rectangle automatically
-		// extends to infinity upwards and downwards
+				// when we don't set yaxis, the rectangle automatically
+				// extends to infinity upwards and downwards
 
-		do {
-			markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
-			i += 7 * 24 * 60 * 60 * 1000;
-		} while (i < axes.xaxis.max);
+				do {
+					markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
+					i += 7 * 24 * 60 * 60 * 1000;
+				} while (i < axes.xaxis.max);
 
-		return markings;
-	}
-	/* }}} */
+				return markings;
+			}
+			/* }}} */
 
-	function showStatsForKey(key) {
-		$.ajax({
-			type: "GET",
-			url: stats_csv_source + 'real_test.' + key + '.stats.csv',
-			dataType: "text",
-			success: function(data) {processData(data);},
-		});
-	}
+			function showStatsForKey(key) {
+				$.ajax({
+					type: "GET",
+					url: stats_csv_source + 'real_test.' + key + '.stats.csv',
+					dataType: "text",
+					success: function(data) { processData(data); },
+				});
+			}
 
-	showStatsForKey('opening_hours');
+			showStatsForKey('opening_hours');
 
-	$.each(tag_keys, function(ind, text) {
-		$('#tag_selector').append(new Option(text, ind));
-	});
-	$('#tag_selector').on('change', function() {
-		showStatsForKey(tag_keys[this.value]);
-	})
+			$.each(tag_keys, function(ind, text) {
+				$('#tag_selector').append(new Option(text, ind));
+			});
+			$('#tag_selector').on('change', function() {
+				showStatsForKey(tag_keys[this.value]);
+			})
 
-	function processData(allText) {
-		$('#placeholder').empty();
-		$('#overview').empty();
-		$('#choices').empty();
+      function processData(allText) {
+				$('#detailed_view').empty();
+				$('#overview').empty();
+				$('#choices').empty();
 
-		// http://stackoverflow.com/a/7431565
-		var allTextLines = allText.split(/\r\n|\n/);
-		headers = allTextLines[0].split(',');
+				// http://stackoverflow.com/a/7431565
+				var allTextLines = allText.split(/\r\n|\n/);
+				headers = allTextLines[0].split(',');
 
-		var data_total_values            = [];
-		var data_could_be_parsed         = [];
-		var data_could_be_parsed_percent = [];
-		var data_with_warning            = [];
-		var data_with_warning_percent    = [];
-		var data_with_unpretty           = [];
-		var data_with_unpretty_percent   = [];
-		var last_data = allTextLines[allTextLines.length - 2].split(','); // Empty line
-		for (var i = 1; i < allTextLines.length; i++) {
-			var data = allTextLines[i].split(',');
-				if (data.length == headers.length) {
-					var time = new Date(data[0]).getTime();
-					data_total_values.push([ time, data[1]]);
-					data_could_be_parsed.push([ time, data[3]]);
-					data_could_be_parsed_percent.push([ time, data[3] / data[1] * 100]);
-					data_with_warning.push([ time, data[5]]);
-					data_with_warning_percent.push([ time, data[5] / data[1] * 100]);
-					data_with_unpretty.push([ time, data[7]]);
-					data_with_unpretty_percent.push([ time, data[7] / data[1] * 100]);
+				var data_total_values            = [];
+				var data_could_be_parsed         = [];
+				var data_could_be_parsed_percent = [];
+				var data_with_warning            = [];
+				var data_with_warning_percent    = [];
+				var data_with_unpretty           = [];
+				var data_with_unpretty_percent   = [];
+				var last_data = allTextLines[allTextLines.length - 2].split(','); // Empty line
+				for (var i = 1; i < allTextLines.length; i++) {
+					var data = allTextLines[i].split(',');
+						if (data.length == headers.length) {
+							var time = new Date(data[0]).getTime();
+							data_total_values.push([ time, data[1]]);
+							data_could_be_parsed.push([ time, data[3]]);
+							data_could_be_parsed_percent.push([ time, data[3] / data[1] * 100]);
+							data_with_warning.push([ time, data[5]]);
+							data_with_warning_percent.push([ time, data[5] / data[1] * 100]);
+							data_with_unpretty.push([ time, data[7]]);
+							data_with_unpretty_percent.push([ time, data[7] / data[1] * 100]);
 
-					var tarr = [];
-					for (var j = 0; j < headers.length; j++) {
-						tarr.push(data[j].trim());
+							var tarr = [];
+							for (var j = 0; j < headers.length; j++) {
+								tarr.push(data[j].trim());
+							}
+						}
+						// console.log(JSON.stringify(data_could_be_parsed_percent, null, '    '));
+				}
+
+				var options = { /* {{{ */
+					series: {
+						lines: {
+							show: true,
+						},
+						points: {
+							show: true
+						},
+						shadowSize: 0,
+					},
+					xaxis: {
+						mode: "time",
+						tickLength: 5,
+						timezone: "browser",
+					},
+					yaxis: [ { position: "left" }, { position: "left" } ],
+					selection: {
+						mode: "x"
+					},
+					grid: {
+						markings: weekendAreas,
+						hoverable: true,
+						// clickable: true
+					},
+					legend: {
+						position: "se",
+					},
+				}; /* }}} */
+
+				var datasets = [ /* {{{ */
+					{
+						data: data_total_values,
+						label_short: 'Total number',
+						label: 'Total number of values',
+						checked: true, }, {
+						data: data_could_be_parsed,
+						label_short: 'Parsed values',
+						label: 'Number of values which could be parsed',
+					}, {
+						data: data_could_be_parsed_percent,
+						yaxis: 2,
+						label_short: 'Parsed values in %',
+						label: 'Number of values which could be parsed in percent',
+						checked: true,
+						percent_number: true,
+					}, {
+						data: data_with_warning,
+						label_short: 'Warning values',
+						label: 'Number of values which returned a warning',
+					}, {
+						data: data_with_warning_percent,
+						yaxis: 2,
+						label_short: 'Warning values in %',
+						label: 'Number of values which returned a warning in percent',
+						percent_number: true,
+					}, {
+						data: data_with_unpretty,
+						label_short: 'Unpretty values',
+						label: 'Number of values which are not prettified',
+					}, {
+						data: data_with_unpretty_percent,
+						yaxis: 2,
+						label_short: 'Unpretty values in %',
+						label: 'Number of values which are not prettified in percent',
+						percent_number: true,
+					},
+				]; /* }}} */
+
+				var i = 0;
+				$.each(datasets, function(key, val) {
+					val.color = i;
+					++i;
+				});
+
+				/* insert checkboxes {{{ */
+				var choiceContainer = $("#choices");
+				$.each(datasets, function(key, val) {
+					// val.checked = true;
+					choiceContainer.append("<br/><input type='checkbox' name='" + key + "'" +
+						(val.checked ? " checked='checked'" : '') + " id='id" + key + "'></input>" +
+						"<label for='id" + key + "'>"
+						+ val.label_short + "</label>");
+				});
+				choiceContainer.find("input").click(plotAccordingToChoices);
+        /* }}} */
+
+				var plot;
+				function plotAccordingToChoices() { /* {{{ */
+					var data = [];
+
+					choiceContainer.find("input:checked").each(function () {
+						var key = $(this).attr("name");
+						if (key && datasets[key]) {
+							data.push(datasets[key]);
+						}
+					});
+
+					if (data.length > 0) {
+						plot = $.plot("#detailed_view", data, options);
 					}
-				}
-				// console.log(JSON.stringify(data_could_be_parsed_percent, null, '    '));
-		}
+				} /* }}} */
 
-		var options = {
-			series: {
-				lines: {
-					show: true,
-				},
-				points: {
-					show: true
-				},
-				shadowSize: 0,
-			},
-			xaxis: {
-				mode: "time",
-				tickLength: 5,
-				timezone: "browser",
-			},
-			yaxis: [ { position: "left" }, { position: "left" } ],
-			selection: {
-				mode: "x"
-			},
-			grid: {
-				markings: weekendAreas,
-				hoverable: true,
-				// clickable: true
-			},
-			legend: {
-				position: "se",
-			},
-		};
+				plotAccordingToChoices();
 
-		var datasets = [
-			{
-				data: data_total_values,
-				label_short: 'Total number',
-				label: 'Total number of values',
-				checked: true, }, {
-				data: data_could_be_parsed,
-				label_short: 'Parsed values',
-				label: 'Number of values which could be parsed',
-			}, {
-				data: data_could_be_parsed_percent,
-				yaxis: 2,
-				label_short: 'Parsed values in %',
-				label: 'Number of values which could be parsed in percent',
-				checked: true,
-				percent_number: true,
-			}, {
-				data: data_with_warning,
-				label_short: 'Warning values',
-				label: 'Number of values which returned a warning',
-			}, {
-				data: data_with_warning_percent,
-				yaxis: 2,
-				label_short: 'Warning values in %',
-				label: 'Number of values which returned a warning in percent',
-				percent_number: true,
-			}, {
-				data: data_with_unpretty,
-				label_short: 'Unpretty values',
-				label: 'Number of values which are not prettified',
-			}, {
-				data: data_with_unpretty_percent,
-				yaxis: 2,
-				label_short: 'Unpretty values in %',
-				label: 'Number of values which are not prettified in percent',
-				percent_number: true,
-			},
-		];
-		var i = 0;
-		$.each(datasets, function(key, val) {
-			val.color = i;
-			++i;
+        /* Define overview section {{{ */
+				var overview = $.plot("#overview", [data_total_values], {
+					series: {
+						lines: {
+							show: true,
+							lineWidth: 1
+						},
+						shadowSize: 0,
+					},
+					xaxis: {
+						ticks: [],
+						mode: "time",
+					},
+					yaxis: {
+						ticks: [],
+						// min: 0,
+						autoscaleMargin: 0.1
+					},
+					selection: {
+						mode: "x"
+					}
+				});
+        /* }}} */
+
+				/* connect the detailed_view and the overview {{{ */
+				$("#detailed_view").bind("plotselected", function (event, ranges) {
+
+					// do the zooming
+					$.each(plot.getXAxes(), function(_, axis) {
+						var opts = axis.options;
+						opts.min = ranges.xaxis.from;
+						opts.max = ranges.xaxis.to;
+					});
+					plot.setupGrid();
+					plot.draw();
+					plot.clearSelection();
+
+					// don't fire event on the overview to prevent eternal loop
+
+					overview.setSelection(ranges, true);
+				});
+
+				$("#overview").bind("plotselected", function (event, ranges) {
+					plot.setSelection(ranges);
+				});
+
+				$("<div id='tooltip'></div>").css({
+					position: "absolute",
+					display: "none",
+					border: "1px solid #fdd",
+					padding: "2px",
+					"background-color": "#fee",
+					opacity: 0.80
+				}).appendTo("body");
+
+				$("#detailed_view").bind("plothover", function (event, pos, item) {
+					if (item) {
+						// console.log(JSON.stringify(item, null, '    '));
+						// console.log();
+						var date = new Date(item.datapoint[0]),
+							y = item.datapoint[1];
+
+						var additional_node = '';
+						if (item.dataIndex > 0) {
+							var diff_to_last_time = y - item.series.data[item.dataIndex - 1][1];
+							additional_node += '<br>Difference to previous value: '
+								+ (diff_to_last_time > 0 ? '+' : '')
+								+ (item.series.percent_number ? diff_to_last_time.toFixed(4) + '&nbsp;%' : diff_to_last_time).toString();
+						}
+
+						$("#tooltip").html(
+							(item.series.percent_number ? y.toFixed(3).toString() + '&nbsp;%' : numberWithSpace(y))
+							+ " as of "
+							+ date.getFullYear() + '-' + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
+							+ ' ' + (date.getHours() < 10 ? '0' : '') + date.getHours()
+							+ ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
+							+ ' (' + item.series.label + ')'
+							+ additional_node)
+							.css({top: item.pageY+5, left: item.pageX+5})
+							.fadeIn(200);
+					} else {
+						$("#tooltip").hide();
+					}
+				});
+        /* }}} */
+
+        /* Highlight data point when clicked {{{ */
+				$("#detailed_view").bind("plotclick", function (event, pos, item) {
+					if (item) {
+						plot.highlight(item.series, item.datapoint);
+					}
+				});
+        /* }}} */
+
+      }
+
+      /* Add the Flot version string to the footer {{{ */
+			$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
+      /* }}} */
 		});
-
-		// insert checkboxes
-
-		var choiceContainer = $("#choices");
-		$.each(datasets, function(key, val) {
-			// val.checked = true;
-			choiceContainer.append("<br/><input type='checkbox' name='" + key + "'" +
-				(val.checked ? " checked='checked'" : '') + " id='id" + key + "'></input>" +
-				"<label for='id" + key + "'>"
-				+ val.label_short + "</label>");
-		});
-		choiceContainer.find("input").click(plotAccordingToChoices);
-
-		var plot;
-		function plotAccordingToChoices() {
-			var data = [];
-
-			choiceContainer.find("input:checked").each(function () {
-				var key = $(this).attr("name");
-				if (key && datasets[key]) {
-					data.push(datasets[key]);
-				}
-			});
-
-			if (data.length > 0) {
-				plot = $.plot("#placeholder", data, options);
-			}
-		}
-
-		plotAccordingToChoices();
-
-		var overview = $.plot("#overview", [data_total_values], {
-			series: {
-				lines: {
-					show: true,
-					lineWidth: 1
-				},
-				shadowSize: 0,
-			},
-			xaxis: {
-				ticks: [],
-				mode: "time",
-			},
-			yaxis: {
-				ticks: [],
-				// min: 0,
-				autoscaleMargin: 0.1
-			},
-			selection: {
-				mode: "x"
-			}
-		});
-
-		// now connect the two
-		$("#placeholder").bind("plotselected", function (event, ranges) {
-
-			// do the zooming
-			$.each(plot.getXAxes(), function(_, axis) {
-				var opts = axis.options;
-				opts.min = ranges.xaxis.from;
-				opts.max = ranges.xaxis.to;
-			});
-			plot.setupGrid();
-			plot.draw();
-			plot.clearSelection();
-
-			// don't fire event on the overview to prevent eternal loop
-
-			overview.setSelection(ranges, true);
-		});
-
-		$("#overview").bind("plotselected", function (event, ranges) {
-			plot.setSelection(ranges);
-		});
-
-		$("<div id='tooltip'></div>").css({
-			position: "absolute",
-			display: "none",
-			border: "1px solid #fdd",
-			padding: "2px",
-			"background-color": "#fee",
-			opacity: 0.80
-		}).appendTo("body");
-
-		$("#placeholder").bind("plothover", function (event, pos, item) {
-			if (item) {
-				// console.log(JSON.stringify(item, null, '    '));
-				// console.log();
-				var date = new Date(item.datapoint[0]),
-					y = item.datapoint[1];
-
-				var additional_node = '';
-				if (item.dataIndex > 0) {
-					var diff_to_last_time = y - item.series.data[item.dataIndex - 1][1];
-					additional_node += '<br>Difference to previous value: '
-						+ (diff_to_last_time > 0 ? '+' : '')
-						+ (item.series.percent_number ? diff_to_last_time.toFixed(4) + '&nbsp;%' : diff_to_last_time).toString();
-				}
-
-				$("#tooltip").html(
-					(item.series.percent_number ? y.toFixed(3).toString() + '&nbsp;%' : numberWithSpace(y))
-					+ " as of "
-					+ date.getFullYear() + '-' + (date.getMonth() < 9 ? '0' : '') + (date.getMonth() + 1) + '-' + (date.getDate() < 10 ? '0' : '' ) + date.getDate()
-					+ ' ' + (date.getHours() < 10 ? '0' : '') + date.getHours()
-					+ ':' + (date.getMinutes() < 10 ? '0' : '') + date.getMinutes()
-					+ ' (' + item.series.label + ')'
-					+ additional_node)
-					.css({top: item.pageY+5, left: item.pageX+5})
-					.fadeIn(200);
-			} else {
-				$("#tooltip").hide();
-			}
-		});
-
-		$("#placeholder").bind("plotclick", function (event, pos, item) {
-			if (item) {
-				plot.highlight(item.series, item.datapoint);
-			}
-		});
-
-		// Add the Flot version string to the footer
-
-	}
-	$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
-});
-
-</script>
-</head>
-<body>
+  </script><!-- }}} -->
+</head><!-- }}} -->
+<body><!-- {{{ -->
 
 	<a href="https://github.com/ypid/opening_hours-statistics"><img style="position: absolute; top: 0; right: 0; border: 0;" src="img/fork_me_on_github.png" alt="Fork me on GitHub"></a>
 
@@ -328,7 +334,7 @@ $(function() {
 	<div id="content">
 
 		<div class="demo-container">
-			<div id="placeholder" class="demo-placeholder" style="float:left; width:70%;"></div>
+			<div id="detailed_view" class="demo-placeholder" style="float:left; width:70%;"></div>
 			<div style="float:right;">
 				<select id="tag_selector"></select>
 				<p id="choices"></p>
@@ -339,14 +345,14 @@ $(function() {
 			<div id="overview" class="demo-placeholder"></div>
 		</div>
 
-		<center>
-			<p>The purpose of this statistic is to show the data quality and grow over time. For more information check out the <a href="https://github.com/ypid/opening_hours-statistics">README on GitHub</a>.</p>
-		</center>
+		<p class="text">
+			The purpose of this statistic is to show the data quality and grow over time. For more information check out the <a href="https://github.com/ypid/opening_hours-statistics">README on GitHub</a>.
+		</p>
 
 	</div>
 
 	<div id="footer">
 		Copyright &copy; 2007 - 2014 IOLA and Ole Laursen; Modified by Robin `ypid` Schneider.
 	</div>
-</body>
+</body><!-- }}} -->
 </html>
