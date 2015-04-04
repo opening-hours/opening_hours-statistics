@@ -54,7 +54,9 @@
 					// clickable: true
 				},
 				legend: {
-					position: "se",
+					// position: "se",
+					container: "#legend",
+					backgroundOpacity: 0.4,
 				},
 			}; /* }}} */
 
@@ -385,9 +387,13 @@
 
 		<div class="demo-container">
 			<div id="detailed_view" class="demo-placeholder" style="float:left; width:70%;"></div>
-			<div style="float:right;">
-				<select id="tag_selector"></select>
-				<p id="choices"></p>
+			<div class="choices_and_legend" style="float:right; width: 25%">
+				<div class="choices">
+					<select id="tag_selector"></select>
+					<p id="choices"></p>
+				</div>
+
+				<div id='legend'></div>
 			</div>
 		</div>
 

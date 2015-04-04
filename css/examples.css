@@ -91,6 +91,14 @@ p.text {
 	-webkit-box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
+.choices_and_legend {
+	padding-top: 10px;
+}
+
+.choices {
+	padding-bottom: 10px;
+}
+
 .demo-placeholder {
 	/* width: 100%; */
 	height: 100%;
