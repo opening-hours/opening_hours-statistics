@@ -25,15 +25,46 @@
 
 		$(function() {
 			var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
-			// stats_csv_source = '../oh-stats/'; // FIXME dev
+      // stats_csv_source = '../oh-stats/'; // FIXME dev
 
-			var tag_keys = [
+      var plot;
+
+      var plot_options = { /* {{{ */
+        series: {
+          lines: {
+            show: true,
+          },
+          points: {
+            show: true
+          },
+          shadowSize: 0,
+        },
+        xaxis: {
+          mode: "time",
+          tickLength: 5,
+          timezone: "browser",
+        },
+        yaxis: [ { position: "left" }, { position: "left" } ],
+        selection: {
+          mode: "x"
+        },
+        grid: {
+          markings: weekendAreas,
+          hoverable: true,
+          // clickable: true
+        },
+        legend: {
+          position: "se",
+        },
+      }; /* }}} */
+
+			var tag_keys = [ /* {{{ */
 				'opening_hours', 'opening_hours:kitchen', 'opening_hours:warm_kitchen',
 				'service_times',
 				'collection_times', 'fee', 'lit',
 				'happy_hours',
 				'smoking_hours',
-			];
+			]; /* }}} */
 
 			/* Helper for returning the weekends in a period {{{ */
 			function weekendAreas(axes) {
@@ -62,29 +93,30 @@
 			}
 			/* }}} */
 
-			function showStatsForKey(key) {
+			function showStatsForKey(key) { /* {{{ */
 				$.ajax({
 					type: "GET",
 					url: stats_csv_source + 'real_test.' + key + '.stats.csv',
 					dataType: "text",
 					success: function(data) { processData(data); },
 				});
-			}
+			} /* }}} */
 
-			showStatsForKey('opening_hours');
-
+      /* Create and connect drop down menu to change data source {{{ */
 			$.each(tag_keys, function(ind, text) {
 				$('#tag_selector').append(new Option(text, ind));
 			});
 			$('#tag_selector').on('change', function() {
 				showStatsForKey(tag_keys[this.value]);
 			})
+      /* }}} */
 
       function processData(allText) {
 				$('#detailed_view').empty();
 				$('#overview').empty();
 				$('#choices').empty();
 
+        /* Parse the CSV file {{{ */
 				// http://stackoverflow.com/a/7431565
 				var allTextLines = allText.split(/\r\n|\n/);
 				headers = allTextLines[0].split(',');
@@ -116,35 +148,7 @@
 						}
 						// console.log(JSON.stringify(data_could_be_parsed_percent, null, '    '));
 				}
-
-				var options = { /* {{{ */
-					series: {
-						lines: {
-							show: true,
-						},
-						points: {
-							show: true
-						},
-						shadowSize: 0,
-					},
-					xaxis: {
-						mode: "time",
-						tickLength: 5,
-						timezone: "browser",
-					},
-					yaxis: [ { position: "left" }, { position: "left" } ],
-					selection: {
-						mode: "x"
-					},
-					grid: {
-						markings: weekendAreas,
-						hoverable: true,
-						// clickable: true
-					},
-					legend: {
-						position: "se",
-					},
-				}; /* }}} */
+        /* }}} */
 
 				var datasets = [ /* {{{ */
 					{
@@ -185,13 +189,15 @@
 					},
 				]; /* }}} */
 
+        /* Set individual color for each column {{{ */
 				var i = 0;
 				$.each(datasets, function(key, val) {
 					val.color = i;
 					++i;
 				});
+        /* }}} */
 
-				/* insert checkboxes {{{ */
+				/* Insert check boxes to select data source columns to plot {{{ */
 				var choiceContainer = $("#choices");
 				$.each(datasets, function(key, val) {
 					// val.checked = true;
@@ -203,7 +209,6 @@
 				choiceContainer.find("input").click(plotAccordingToChoices);
         /* }}} */
 
-				var plot;
 				function plotAccordingToChoices() { /* {{{ */
 					var data = [];
 
@@ -215,11 +220,9 @@
 					});
 
 					if (data.length > 0) {
-						plot = $.plot("#detailed_view", data, options);
+						plot = $.plot("#detailed_view", data, plot_options);
 					}
 				} /* }}} */
-
-				plotAccordingToChoices();
 
         /* Define overview section {{{ */
 				var overview = $.plot("#overview", [data_total_values], {
@@ -250,7 +253,7 @@
 
 					// do the zooming
 					$.each(plot.getXAxes(), function(_, axis) {
-						var opts = axis.options;
+						var opts = axis.plot_options;
 						opts.min = ranges.xaxis.from;
 						opts.max = ranges.xaxis.to;
 					});
@@ -315,7 +318,10 @@
 				});
         /* }}} */
 
+				plotAccordingToChoices();
       }
+
+			showStatsForKey('opening_hours'); /* Plot the default data source */
 
       /* Add the Flot version string to the footer {{{ */
 			$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
