@@ -253,7 +253,7 @@
 
 					// do the zooming
 					$.each(plot.getXAxes(), function(_, axis) {
-						var opts = axis.plot_options;
+						var opts = axis.options;
 						opts.min = ranges.xaxis.from;
 						opts.max = ranges.xaxis.to;
 					});
