@@ -102,6 +102,48 @@
 				});
 			} /* }}} */
 
+			function timePointer(plot, currentTime, id, content) { /* {{{ */
+				/* http://stackoverflow.com/a/17533126/2239985 */
+				var id = 'time-pointer-' +  id;
+
+				// Get the currente axes
+				var axes = plot.getAxes();
+				var xaxis = axes.xaxis;
+				var yaxis = axes.yaxis;
+
+				var element = plot.getPlaceholder();
+
+				// Find the chart icon element
+				var pointer = element.find('#' + id);
+
+				console.log(currentTime);
+				console.log(xaxis.max);
+				// Check that the intended point is inside the visible area
+				if((currentTime < xaxis.max) && (currentTime > xaxis.min)) {
+					if(pointer.length == 0) {
+						// If it doesn't exist already, create it
+						element.append('<i id="' + id + '" class="time-pointer">' + content + '</i>');
+						pointer = element.find('#' + id);
+					}
+
+					var plotOffset = plot.offset();
+					var offset = {
+						top: plotOffset.top - pointer.height(),
+						left: xaxis.p2c(currentTime) + plotOffset.left // + pointer.outerWidth(false)
+					};
+					console.log(offset);
+					pointer.offset(offset);
+				} else {
+					// If the currently selected area doesn't contain the point, erase the pointer
+					pointer.remove();
+				}
+			} /* }}} */
+
+			function placeTimePointers(plot) { /* {{{ */
+				timePointer(plot, new Date(2014, 9, 19).getTime(), "issue-28", '<a href="https://github.com/ypid/opening_hours_map/issues/28">Server offline</a>');
+				timePointer(plot, new Date(2015, 3, 20).getTime(), "OSMWA1517", '<a href="https://trello.com/c/Dw8w24hh/30-offnungszeiten">Wochenaufgabe</a>');
+			} /* }}} */
+
 			/* Create and connect drop down menu to change data source {{{ */
 			$.each(tag_keys, function(ind, text) {
 				$('#tag_selector').append(new Option(text, ind));
@@ -221,6 +263,7 @@
 
 					if (data.length > 0) {
 						plot = $.plot("#detailed_view", data, plot_options);
+						placeTimePointers(plot);
 					}
 				} /* }}} */
 
@@ -260,6 +303,7 @@
 					plot.setupGrid();
 					plot.draw();
 					plot.clearSelection();
+					placeTimePointers(plot);
 
 					// don't fire event on the overview to prevent eternal loop
 
