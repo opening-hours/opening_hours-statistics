@@ -95,10 +95,17 @@
 			}
 			/* }}} */
 
-			function showStatsForKey(key) { /* {{{ */
+			function showStatsForKey() { /* {{{ */
+				var key = $('#tag_selector').val();
+				var boundary = $('#boundary_selector').val();
+				if (boundary === 'planet=earth') {
+					var source_file = 'real_test.' + key + '.stats.csv';
+				} else {
+					var source_file = 'export♡' + key + '♡' + boundary.replace(/=/g, '♡') + '♡stats.csv';
+				}
 				$.ajax({
 					type: "GET",
-					url: stats_csv_source + 'real_test.' + key + '.stats.csv',
+					url: stats_csv_source + source_file,
 					dataType: "text",
 					success: function(data) { processData(data); },
 				});
@@ -146,12 +153,32 @@
 				timePointer(plot, new Date(2015, 3, 20).getTime(), "OSMWA1517", '<a href="https://trello.com/c/Dw8w24hh/30-offnungszeiten">Wochenaufgabe</a>');
 			} /* }}} */
 
+			/* Create and connect drop down menu to change data source boundary {{{ */
+			$('#boundary_selector').append(new Option('planet=earth (not an official tag)', 'planet=earth'));
+			$.ajax({
+				type: "GET",
+				url: stats_csv_source + 'stats_for_boundaries.list',
+				dataType: "text",
+				success: function(data) {
+					data.split('\n').forEach(function (line) {
+						if (line.match(/^[^#]/)) {
+							line = line.replace(/♡/g, '=');
+							$('#boundary_selector').append(new Option(line, line));
+						}
+					});
+				},
+			});
+			$('#boundary_selector').on('change', function() {
+				showStatsForKey();
+			})
+			/* }}} */
+
 			/* Create and connect drop down menu to change data source {{{ */
 			$.each(tag_keys, function(ind, text) {
-				$('#tag_selector').append(new Option(text, ind));
+				$('#tag_selector').append(new Option(text, text));
 			});
 			$('#tag_selector').on('change', function() {
-				showStatsForKey(tag_keys[this.value]);
+				showStatsForKey();
 			})
 			/* }}} */
 
@@ -368,7 +395,8 @@
 				plotAccordingToChoices();
 			}
 
-			showStatsForKey('opening_hours'); /* Plot the default data source */
+			showStatsForKey();
+			/* Plot the default data source */
 
 			/* Add the Flot version string to the footer {{{ */
 			$("#footer").prepend("Flot " + $.plot.version + " &ndash; ");
@@ -390,8 +418,9 @@
 			<div id="detailed_view" class="demo-placeholder" style="float:left; width:70%;"></div>
 			<div class="choices_and_legend" style="float:right; width: 25%">
 				<div class="choices">
+					<select id="boundary_selector"></select>
 					<select id="tag_selector"></select>
-					<p id="choices"></p>
+					<div id="choices"></div>
 				</div>
 
 				<div id='legend'></div>
