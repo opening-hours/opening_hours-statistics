@@ -129,7 +129,7 @@
 				console.log(xaxis.max);
 				// Check that the intended point is inside the visible area
 				if((currentTime < xaxis.max) && (currentTime > xaxis.min)) {
-					if(pointer.length == 0) {
+					if(pointer.length === 0) {
 						// If it doesn't exist already, create it
 						element.append('<i id="' + id + '" class="time-pointer">' + content + '</i>');
 						pointer = element.find('#' + id);
@@ -202,7 +202,7 @@
 				var last_data = allTextLines[allTextLines.length - 2].split(','); // Empty line
 				for (var i = 1; i < allTextLines.length; i++) {
 					var data = allTextLines[i].split(',');
-						if (data.length == headers.length) {
+						if (data.length === headers.length) {
 							var time = new Date(data[0]).getTime();
 							data_total_values.push([ time, data[1]]);
 							data_could_be_parsed.push([ time, data[3]]);
