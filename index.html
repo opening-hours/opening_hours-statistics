@@ -45,7 +45,10 @@
 					tickLength: 5,
 					timezone: "browser",
 				},
-				yaxis: [ { position: "left" }, { position: "left" } ],
+				yaxis: [
+					{ position: "left" },
+					{ position: "left" }
+				],
 				selection: {
 					mode: "x"
 				},
@@ -319,7 +322,16 @@
 					});
 
 					if (data.length > 0) {
-						plot = $.plot("#detailed_view", data, plot_options);
+						var opts;
+						var this_plot_options = plot_options;
+						if (typeof(plot) !== 'undefined'){
+							var xaxes = plot.getOptions().xaxes[0];
+							this_plot_options.xaxis.min = xaxes.min;
+							this_plot_options.xaxis.max = xaxes.max;
+							console.log(xaxes.min);
+							console.log(xaxes.max);
+						}
+						plot = $.plot("#detailed_view", data, this_plot_options);
 						placeTimePointers(plot);
 					}
 				} /* }}} */
