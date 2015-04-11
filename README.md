@@ -16,6 +16,7 @@ For visualization the [flot JavaScript library][flot-lib] is used.
 You are encouraged to generate your own stats. Here is the data:
 
 http://openingh.openstreetmap.de/stats_data/real_test.opening_hours.stats.csv
+http://openingh.openstreetmap.de/stats_data/
 
 ## Author
 [Robin `ypid` Schneider](http://wiki.openstreetmap.org/wiki/User:Ypid)
