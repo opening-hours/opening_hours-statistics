@@ -9,6 +9,7 @@
 	<script type="text/javascript" src="js/jquery.flot.js"></script>
 	<script type="text/javascript" src="js/jquery.flot.time.js"></script>
 	<script type="text/javascript" src="js/jquery.flot.selection.js"></script>
+	<script type="text/javascript" src="js/simply-toast.min.js"></script>
 	<script type="text/javascript">/* {{{ */
 		/* Helpers {{{ */
 		// http://stackoverflow.com/a/1418059
@@ -107,8 +108,13 @@
 					type: "GET",
 					url: stats_csv_source + source_file,
 					dataType: "text",
-					success: function(data) { processData(data); },
-				});
+				})
+					.done(function(data) {
+						processData(data);
+					})
+					.fail(function( jqXHR, textStatus ) {
+						$.simplyToast( "There are no tags in this location yet. Please add them ☺" );
+					});
 			} /* }}} */
 
 			function timePointer(plot, currentTime, id, content) { /* {{{ */
@@ -125,8 +131,6 @@
 				// Find the chart icon element
 				var pointer = element.find('#' + id);
 
-				console.log(currentTime);
-				console.log(xaxis.max);
 				// Check that the intended point is inside the visible area
 				if((currentTime < xaxis.max) && (currentTime > xaxis.min)) {
 					if(pointer.length === 0) {
