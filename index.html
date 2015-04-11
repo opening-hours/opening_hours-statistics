@@ -113,7 +113,9 @@
 						processData(data);
 					})
 					.fail(function( jqXHR, textStatus ) {
-						$.simplyToast( "There are no tags in this location yet. Please add them ☺" );
+						$.simplyToast( "The tag <code>" + $('#tag_selector').val() + "</code> has not been used in the selected location yet."
+							+ " You can be the first to add one ☺",
+							'warning', { align: "left", delay: 20000, } );
 					});
 			} /* }}} */
 
@@ -159,15 +161,40 @@
 
 			/* Create and connect drop down menu to change data source boundary {{{ */
 			$('#boundary_selector').append(new Option('planet=earth (not an official tag)', 'planet=earth'));
+			var boundary_to_name_mapping = {
+				/* https://de.wikipedia.org/wiki/ISO_3166-2:DE */
+				'ISO3166-2=DE-BW': 'DE: Baden-Württemberg',
+				'ISO3166-2=DE-BY': 'DE: Bayern',
+				'ISO3166-2=DE-BE': 'DE: Berlin',
+				'ISO3166-2=DE-BB': 'DE: Brandenburg',
+				'ISO3166-2=DE-HB': 'DE: Bremen',
+				'ISO3166-2=DE-HH': 'DE: Hamburg',
+				'ISO3166-2=DE-HE': 'DE: Hessen',
+				'ISO3166-2=DE-MV': 'DE: Mecklenburg-Vorpommern',
+				'ISO3166-2=DE-NI': 'DE: Niedersachsen',
+				'ISO3166-2=DE-NW': 'DE: Nordrhein-Westfalen',
+				'ISO3166-2=DE-RP': 'DE: Rheinland-Pfalz',
+				'ISO3166-2=DE-SL': 'DE: Saarland',
+				'ISO3166-2=DE-SN': 'DE: Sachsen',
+				'ISO3166-2=DE-ST': 'DE: Sachsen-Anhalt',
+				'ISO3166-2=DE-SH': 'DE: Schleswig-Holstein',
+				'ISO3166-2=DE-TH': 'DE: Thüringen',
+			};
 			$.ajax({
 				type: "GET",
 				url: stats_csv_source + 'stats_for_boundaries.list',
 				dataType: "text",
 				success: function(data) {
-					data.split('\n').forEach(function (line) {
-						if (line.match(/^[^#]/)) {
-							line = line.replace(/♡/g, '=');
-							$('#boundary_selector').append(new Option(line, line));
+					data.split('\n').forEach(function (boundary_selector) {
+						if (boundary_selector.match(/^[^#]/)) {
+							boundary_selector = boundary_selector.replace(/♡/g, '=');
+							var name = boundary_selector;
+							console.log(name);
+							if (boundary_selector in boundary_to_name_mapping) {
+								var name = boundary_to_name_mapping[boundary_selector];
+								console.log(name);
+							}
+							$('#boundary_selector').append(new Option(name, boundary_selector));
 						}
 					});
 				},
