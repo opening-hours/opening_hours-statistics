@@ -25,7 +25,7 @@
 		/* }}} */
 
 		$(function() {
-			var stats_csv_source = 'http://openingh.openstreetmap.de/opening_hours.js/';
+			var stats_csv_source = 'http://openingh.openstreetmap.de/stats_data/';
 			// stats_csv_source = '../oh-stats/'; // FIXME dev
 
 			var plot;
@@ -146,7 +146,6 @@
 						top: plotOffset.top - pointer.height(),
 						left: xaxis.p2c(currentTime) + plotOffset.left // + pointer.outerWidth(false)
 					};
-					console.log(offset);
 					pointer.offset(offset);
 				} else {
 					// If the currently selected area doesn't contain the point, erase the pointer
@@ -189,10 +188,8 @@
 						if (boundary_selector.match(/^[^#]/)) {
 							boundary_selector = boundary_selector.replace(/♡/g, '=');
 							var name = boundary_selector;
-							console.log(name);
 							if (boundary_selector in boundary_to_name_mapping) {
 								var name = boundary_to_name_mapping[boundary_selector];
-								console.log(name);
 							}
 							$('#boundary_selector').append(new Option(name, boundary_selector));
 						}
