@@ -184,8 +184,9 @@
 			};
 			$.ajax({
 				type: "GET",
-				url: stats_csv_source + 'stats_for_boundaries.list',
+				url: stats_csv_source + 'stats_for_boundaries.txt',
 				dataType: "text",
+				// contentType: "text/plain; charset=UTF-8",
 				success: function(data) {
 					data.split('\n').forEach(function (boundary_selector) {
 						if (boundary_selector.match(/^[^#]/)) {
