@@ -122,7 +122,11 @@
 					});
 			} /* }}} */
 
-			function timePointer(plot, currentTime, id, content) { /* {{{ */
+			function timePointer(plot, currentTime, id, content, func_add) { /* {{{ */
+				if (typeof(func_add) !== 'function') {
+					var func_add = function() { return true; };
+				}
+
 				/* http://stackoverflow.com/a/17533126/2239985 */
 				var id = 'time-pointer-' +  id;
 
@@ -137,7 +141,8 @@
 				var pointer = element.find('#' + id);
 
 				// Check that the intended point is inside the visible area
-				if((currentTime < xaxis.max) && (currentTime > xaxis.min)) {
+				if(func_add(currentTime, id, content) && (currentTime < xaxis.max) && (currentTime > xaxis.min)) {
+
 					if(pointer.length === 0) {
 						// If it doesn't exist already, create it
 						element.append('<i id="' + id + '" class="time-pointer">' + content + '</i>');
@@ -157,8 +162,21 @@
 			} /* }}} */
 
 			function placeTimePointers(plot) { /* {{{ */
-				timePointer(plot, new Date(2014, 9, 19).getTime(), "issue-28", '<a href="https://github.com/ypid/opening_hours_map/issues/28">Server offline</a>');
-				timePointer(plot, new Date(2015, 3, 20).getTime(), "OSMWA1517", '<a href="https://trello.com/c/Dw8w24hh/30-offnungszeiten">Wochenaufgabe</a>');
+				timePointer(plot, new Date(2014, 9, 11).getTime(), "issue-28",
+					'<a href="https://github.com/ypid/opening_hours_map/issues/28">Server offline</a>',
+					function(currentTime, id, content){
+						var boundary = $('#boundary_selector').val();
+						return boundary === 'planet=earth';
+					});
+				timePointer(plot, new Date(2015, 3, 12).getTime(), "issue-2",
+					'<a href="https://github.com/ypid/opening_hours-statistics/issues/2">Fixed issue 2</a>',
+					function(currentTime, id, content){
+						var boundary = $('#boundary_selector').val();
+						var key = $('#tag_selector').val();
+						return boundary === 'planet=earth' && (key === 'fee' || key === 'lit');
+					});
+				timePointer(plot, new Date(2015, 3, 19).getTime(), "OSMWA1517",
+					'<a href="http://blog.openstreetmap.de/blog/2015/04/wochenaufgabe-oeffnungszeiten/">Wochenaufgabe</a>');
 			} /* }}} */
 
 			/* Create and connect drop down menu to change data source boundary {{{ */
