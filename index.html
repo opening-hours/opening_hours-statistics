@@ -151,7 +151,7 @@
 
 					var plotOffset = plot.offset();
 					var offset = {
-						top: plotOffset.top - pointer.height(),
+						top: plotOffset.top - pointer.height() - 5,
 						left: xaxis.p2c(currentTime) + plotOffset.left // + pointer.outerWidth(false)
 					};
 					pointer.offset(offset);
