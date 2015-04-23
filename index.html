@@ -181,6 +181,7 @@
 
 			/* Create and connect drop down menu to change data source boundary {{{ */
 			$('#boundary_selector').append(new Option('planet=earth (not an official tag)', 'planet=earth'));
+			$('#boundary_selector').append(new Option("int_name♡Deutschland", "int_name♡Deutschland"));
 			var boundary_to_name_mapping = {
 				/* https://de.wikipedia.org/wiki/ISO_3166-2:DE */
 				'ISO3166-2=DE-BW': 'DE: Baden-Württemberg',
@@ -213,6 +214,9 @@
 							if (boundary_selector in boundary_to_name_mapping) {
 								var name = boundary_to_name_mapping[boundary_selector];
 							}
+							// if (boundary_selector === 'int_name♡Österreich') {
+								// console.log(boundary_selector);
+							// }
 							$('#boundary_selector').append(new Option(name, boundary_selector));
 						}
 					});
