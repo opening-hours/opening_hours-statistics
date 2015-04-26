@@ -239,7 +239,6 @@
 			function processData(allText) {
 				$('#detailed_view').empty();
 				$('#overview').empty();
-				$('#choices').empty();
 
 				/* Parse the CSV file {{{ */
 				// http://stackoverflow.com/a/7431565
@@ -323,21 +322,22 @@
 				/* }}} */
 
 				/* Insert check boxes to select data source columns to plot {{{ */
-				var choiceContainer = $("#choices");
-				$.each(datasets, function(key, val) {
-					// val.checked = true;
-					choiceContainer.append("<br/><input type='checkbox' name='" + key + "'" +
-						(val.checked ? " checked='checked'" : '') + " id='id" + key + "'></input>" +
-						"<label for='id" + key + "'>"
-						+ val.label_short + "</label>");
-				});
-				choiceContainer.find("input").click(plotAccordingToChoices);
+				if ($('#choices').text().length === 0) {
+					$.each(datasets, function(key, val) {
+						// val.checked = true;
+						$("#choices").append("<br/><input type='checkbox' name='" + key + "'" +
+							(val.checked ? " checked='checked'" : '') + " id='id" + key + "'></input>" +
+							"<label for='id" + key + "'>"
+							+ val.label_short + "</label>");
+					});
+					$("#choices").find("input").click(plotAccordingToChoices);
+				}
 				/* }}} */
 
 				function plotAccordingToChoices() { /* {{{ */
 					var data = [];
 
-					choiceContainer.find("input:checked").each(function () {
+					$("#choices").find("input:checked").each(function () {
 						var key = $(this).attr("name");
 						if (key && datasets[key]) {
 							data.push(datasets[key]);
