@@ -5,6 +5,8 @@ The purpose of this statistic is to show the data quality and grow over time. Be
 
 See [announcement blog post in ypid’s OSM diary](https://www.openstreetmap.org/user/ypid/diary/23881).
 
+See [blog post about how many amenities are open for a given time in ypid’s OSM diary](https://www.openstreetmap.org/user/ypid/diary/34881).
+
 ## Generating stats for your own region
 
 Via Overpass it is possible to generate statistics for arbitrary boundaries. The thing is that the downloading from the Overpass API takes it‘s time. Currently the cronjobs are running from 21:00 till 11:00 because of the low load during that time on [overpass-api.de](http://overpass-api.de/munin/de/overpass-api.de/load.html).
@@ -35,7 +37,7 @@ Note that I currently only accept pull requests for country boundaries or state 
 
 * Jobs for generating the latest statistics are scheduled every night on [gauss.openstreetmap.de](https://wiki.openstreetmap.org/wiki/FOSSGIS/Server/Projects/opening_hours.js). See the [Makefile](https://github.com/ypid/opening_hours.js/blob/master/Makefile) for details.
 
-For visualization the [flot JavaScript library][flot-lib] is used.
+For visualization the [flot][flot-lib] and the [d3][d3-lib] library are used.
 
 You are encouraged to generate your own stats. Here is the data:
 
@@ -48,6 +50,7 @@ http://openingh.openstreetmap.de/stats_data/
 <!-- Link definitions {{{ -->
 [Key:opening_hours]: http://wiki.openstreetmap.org/wiki/Key:opening_hours
 [flot-lib]: https://github.com/flot/flot
+[d3-lib]: https://github.com/mbostock/d3
 [oh-lib]: https://github.com/ypid/opening_hours.js
 [taginfo]: http://taginfo.openstreetmap.org/
 [real_test.js]: https://github.com/ypid/opening_hours.js/blob/master/real_test.js
