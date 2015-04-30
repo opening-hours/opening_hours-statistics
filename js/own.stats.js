@@ -86,7 +86,7 @@ $(function() {
     }
     /* }}} */
 
-    function showStatsForKey() { /* {{{ */
+    function showStatsForKey(type) { /* {{{ */
         var db_stats_file, punchcard_data_file;
         var key = $('#tag_selector').val();
         var boundary = $('#boundary_selector').val();
@@ -110,7 +110,9 @@ $(function() {
                     + " You can be the first to add one ☺",
                     'warning', { align: "left", delay: 7000, } );
             });
-        // load_punchcard(stats_csv_source + punchcard_data_file);
+        if (type === '#boundary_selector' || typeof(type) === 'undefined') {
+            load_punchcard(stats_csv_source + punchcard_data_file);
+        }
     } /* }}} */
 
     function timePointer(plot, currentTime, id, content, func_add) { /* {{{ */
@@ -214,7 +216,7 @@ $(function() {
         },
     });
     $('#boundary_selector').on('change', function() {
-        showStatsForKey();
+        showStatsForKey('#boundary_selector');
     });
     /* }}} */
 
@@ -223,7 +225,7 @@ $(function() {
         $('#tag_selector').append(new Option(text, text));
     });
     $('#tag_selector').on('change', function() {
-        showStatsForKey();
+        showStatsForKey('#tag_selector');
     })
     /* }}} */
 
@@ -448,7 +450,7 @@ $(function() {
     }
 
     showStatsForKey();
-    load_punchcard(stats_csv_source + 'punchcard.csv');
+    // load_punchcard(stats_csv_source + 'punchcard.csv');
     /* Plot the default data source */
 
     /* Punchcard {{{ */
