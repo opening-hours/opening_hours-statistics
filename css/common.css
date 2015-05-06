@@ -17,10 +17,11 @@ a:hover {
 }
 
 #boundary_selector {
-	margin-right: 95px;
+	right: 95px;
 	margin-top: 15px;
-	float: right;
+	position:absolute;
 }
+
 
 h1 {
 	margin-top: 35px;
