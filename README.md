@@ -9,7 +9,7 @@ See [blog post about how many amenities are open for a given time in ypid’s OS
 
 ## Generating stats for your own region
 
-Via Overpass it is possible to generate statistics for arbitrary boundaries. The thing is that the downloading from the Overpass API takes it‘s time. Currently the cronjobs are running from 21:00 till 11:00 because of the low load during that time on [overpass-api.de](http://overpass-api.de/munin/de/overpass-api.de/load.html).
+Via Overpass it is possible to generate statistics for arbitrary boundaries. The thing is that the downloading from the Overpass API takes it‘s time. Currently the cronjobs are running from 21:00 till 11:00 because of the low load during that time on [overpass-api.de](http://overpass-api.de/munin/localdomain/localhost.localdomain/load.html).
 
 Steps to add new boundaries:
 
