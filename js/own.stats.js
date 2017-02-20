@@ -1,11 +1,11 @@
 /* Helpers {{{ */
-// http://stackoverflow.com/a/1418059
+// https://stackoverflow.com/a/1418059
 if(typeof(String.prototype.trim) === "undefined") {
     String.prototype.trim = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
     };
 }
-// http://stackoverflow.com/a/2901298
+// https://stackoverflow.com/a/2901298
 function numberWithSpace(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
 }
@@ -120,7 +120,7 @@ $(function() {
             var func_add = function() { return true; };
         }
 
-        /* http://stackoverflow.com/a/17533126/2239985 */
+        /* https://stackoverflow.com/a/17533126/2239985 */
         var id = 'time-pointer-' +  id;
 
         // Get the currente axes
@@ -234,7 +234,7 @@ $(function() {
         $('#overview').empty();
 
         /* Parse the CSV file {{{ */
-        // http://stackoverflow.com/a/7431565
+        // https://stackoverflow.com/a/7431565
         var allTextLines = allText.split(/\r\n|\n/);
         headers = allTextLines[0].split(',');
 

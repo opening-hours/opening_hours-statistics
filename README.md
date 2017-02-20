@@ -1,6 +1,6 @@
 # opening_hours-statistics
 
-Simple visualization of the [opening_hours][Key:opening_hours] values in [OpenStreetMap](http://openstreetmap.org).
+Simple visualization of the [opening_hours][Key:opening_hours] values in [OpenStreetMap](https://openstreetmap.org).
 The purpose of this statistic is to show the data quality and grow over time. Because of this, the [library][oh-lib] version which parses the opening_hours is pinned to [v3.0.0](https://github.com/opening-hours/opening_hours.js/releases/tag/v3.0.0).
 
 See [announcement blog post in ypid’s OSM diary](https://www.openstreetmap.org/user/ypid/diary/23881).
@@ -9,7 +9,7 @@ See [blog post about how many amenities are open for a given time in ypid’s OS
 
 ## Generating stats for your own region
 
-Via Overpass it is possible to generate statistics for arbitrary boundaries. The thing is that the downloading from the Overpass API takes it‘s time. Currently the cronjobs are running from 21:00 till 11:00 because of the low load during that time on [overpass-api.de](http://overpass-api.de/munin/localdomain/localhost.localdomain/load.html).
+Via Overpass it is possible to generate statistics for arbitrary boundaries. The thing is that the downloading from the Overpass API takes it‘s time. Currently the cronjobs are running from 21:00 till 11:00 because of the low load during that time on [overpass-api.de](https://overpass-api.de/munin/localdomain/localhost.localdomain/load.html).
 
 Steps to add new boundaries:
 
@@ -45,14 +45,14 @@ http://openingh.openstreetmap.de/stats_data/real_test.opening_hours.stats.csv
 http://openingh.openstreetmap.de/stats_data/
 
 ## Author
-[Robin `ypid` Schneider](http://wiki.openstreetmap.org/wiki/User:Ypid)
+[Robin `ypid` Schneider](https://wiki.openstreetmap.org/wiki/User:Ypid)
 
 <!-- Link definitions {{{ -->
-[Key:opening_hours]: http://wiki.openstreetmap.org/wiki/Key:opening_hours
+[Key:opening_hours]: https://wiki.openstreetmap.org/wiki/Key:opening_hours
 [flot-lib]: https://github.com/flot/flot
 [d3-lib]: https://github.com/mbostock/d3
 [oh-lib]: https://github.com/opening-hours/opening_hours.js
-[taginfo]: http://taginfo.openstreetmap.org/
+[taginfo]: https://taginfo.openstreetmap.org/
 [real_test.js]: https://github.com/opening-hours/opening_hours.js/blob/master/real_test.js
 [opening_hours_map]: https://github.com/ypid/opening_hours_map
 <!-- }}} -->
