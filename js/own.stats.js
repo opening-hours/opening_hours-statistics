@@ -15,6 +15,20 @@ $(function() {
     var stats_csv_source = 'http://openingh.openstreetmap.de/stats_data/';
     // stats_csv_source = '../oh-stats/'; // FIXME dev
 
+    function isCanvasSupported(){
+        var elem = document.createElement('canvas');
+        return !!(elem.getContext && elem.getContext('2d'));
+    }
+
+    if (!isCanvasSupported()) {
+        $.simplyToast( "Your browser has Canvas support disabled or does not support it yet."
+            + " That is a good thing to protect your privacy but the \"What is in the database?\" part of the site depends on Canvas."
+            + " \"What is in the database?\" is folded away for you. Enable Canvas if you want to use it.",
+            'warning', { align: "left", delay: 30000, } );
+        $("#osm_db_over_time").slideToggle(2000);
+        $("#tooltip").hide();
+    }
+
     var plot;
 
     var plot_options = { /* {{{ */
@@ -107,8 +121,9 @@ $(function() {
             })
             .fail(function( jqXHR, textStatus ) {
                 $.simplyToast( "The tag <code>" + $('#tag_selector').val() + "</code> has not been used in the selected location yet."
-                    + " You can be the first to add one ☺",
-                    'warning', { align: "left", delay: 7000, } );
+                    + " You can be the first to add one ☺"
+                    + " It might also be the case that there is a problem with getting the data.",
+                    'warning', { align: "left", delay: 10000, } );
             });
         if (type === '#boundary_selector' || typeof(type) === 'undefined') {
             load_punchcard(stats_csv_source + punchcard_data_file);
@@ -708,7 +723,6 @@ $(function() {
     /* }}} */
 
     jQuery("h2").click(function() {
-        console.log("value");
         jQuery(this).next(".content").slideToggle(500);
         $("#tooltip").hide();
     });
