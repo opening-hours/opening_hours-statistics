@@ -185,6 +185,8 @@ $(function() {
             });
         timePointer(plot, new Date(2015, 3, 19).getTime(), "OSMWA1517",
             '<a href="http://blog.openstreetmap.de/blog/2015/04/wochenaufgabe-oeffnungszeiten/">Wochenaufgabe</a>');
+        timePointer(plot, new Date(2017, 1, 12).getTime(), "issue-13",
+            '<a href="https://github.com/opening-hours/opening_hours-statistics/issues/13">Missing data</a>');
     } /* }}} */
 
     /* Create and connect drop down menu to change data source boundary {{{ */
