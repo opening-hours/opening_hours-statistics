@@ -12,7 +12,7 @@ function numberWithSpace(x) {
 /* }}} */
 
 $(function() {
-    var stats_csv_source = 'http://openingh.openstreetmap.de/stats_data/';
+    var stats_csv_source = 'https://openingh.openstreetmap.de/stats_data/';
     // stats_csv_source = '../oh-stats/'; // FIXME dev
 
     function isCanvasSupported(){

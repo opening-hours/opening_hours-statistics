@@ -41,8 +41,8 @@ For visualization the [flot][flot-lib] and the [d3][d3-lib] library are used.
 
 You are encouraged to generate your own stats. Here is the data:
 
-http://openingh.openstreetmap.de/stats_data/real_test.opening_hours.stats.csv
-http://openingh.openstreetmap.de/stats_data/
+https://openingh.openstreetmap.de/stats_data/real_test.opening_hours.stats.csv
+https://openingh.openstreetmap.de/stats_data/
 
 ## Author
 [Robin `ypid` Schneider](https://wiki.openstreetmap.org/wiki/User:Ypid)
