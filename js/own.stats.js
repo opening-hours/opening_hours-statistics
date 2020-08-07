@@ -66,7 +66,7 @@ $(function() {
     }; /* }}} */
 
     var tag_keys = [ /* {{{ */
-        'opening_hours', 'opening_hours:kitchen', 'opening_hours:warm_kitchen',
+        'opening_hours', 'opening_hours:kitchen', 'opening_hours:warm_kitchen', 'opening_hours:covid19',
         'service_times',
         'collection_times', 'fee', 'lit',
         'happy_hours',
